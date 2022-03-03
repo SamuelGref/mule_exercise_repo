@@ -1,0 +1,10 @@
+http:
+ port: "8091"
+ path: "emp_spai"
+ 
+db:
+  host: "bnryg7xmhducrdak9ob7-mysql.services.clever-cloud.com"
+  port: "3306"
+  user: "umli0bis5cptwc9q"
+  password: "lt9rSu1UJldLzcrsCsqH"
+  database: "bnryg7xmhducrdak9ob7"

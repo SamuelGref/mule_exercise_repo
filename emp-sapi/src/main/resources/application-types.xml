@@ -1,4 +1,21 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
-  <types:catalog/>
+  <types:catalog>
+    <types:type name="update-employee-respnse" format="json">
+      <types:shape format="weave" example="examples/get-employees-response-1.json"><![CDATA[%dw 2.0
+
+type update_employee_respnse = Array<{|  employeeID: Number {"typeId": "int"},   employeeName: String,   employeeStatus: String|}> {"example": "[{\\\"employeeID\\\":100,\\\"employeeName\\\":\\\"Chinna\\\",\\\"employeeStatus\\\":\\\"A\\\"},{\\\"employeeID\\\":101,\\\"employeeName\\\":\\\"John\\\",\\\"employeeStatus\\\":\\\"A\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#1d21f68e-7261-4d1d-96c3-b20281167566">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="update-employee-respnse"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
 </types:mule>

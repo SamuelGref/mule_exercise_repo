@@ -53,7 +53,13 @@ output application/json
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-payload]]></ee:set-payload>
+payload map (obj,indx) -> {
+	num:indx,
+	employeeID: obj.emp_id,
+	employeeName: obj.emp_name,
+	employeeStatus:obj.emp_status
+}
+	]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</flow>
@@ -82,8 +88,8 @@ output application/json
 			</ee:message>
 		</ee:transform>
 	</flow>
-	<flow name="create-employeeFlow1" doc:id="405b35b5-865a-4ea0-b929-369522b73276" >
-		<http:listener doc:name="Listener" doc:id="1f7c86b9-fe92-43a6-8316-95ec05f53d13" config-ref="HTTP_Listener_config" path="/{id}"/>
+	<flow name="delete" doc:id="405b35b5-865a-4ea0-b929-369522b73276" >
+		<http:listener doc:name="Listener" doc:id="1f7c86b9-fe92-43a6-8316-95ec05f53d13" config-ref="HTTP_Listener_config" path="/{id}" allowedMethods="DELET"/>
 		<set-variable value="#[attributes.uriParams.id]" doc:name="Set Variable" doc:id="38fad182-e410-44e9-83d1-2f4c154f9217" variableName="id"/>
 		<db:delete doc:name="Delete" doc:id="9d571b13-0bdf-49a8-90ba-f343c69ea0b4" config-ref="Database_Config">
 			<db:sql ><![CDATA[DELETE from emp 
