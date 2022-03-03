@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get-employeeFlow" doc:id="b35ebcf7-5119-4edf-857b-6686e5ce680a" >
+		<http:listener doc:name="Listener" doc:id="699f7e28-e4ab-4ac6-b8d1-c25edc746abc" config-ref="HTTP_Listener_config" path="get-employee"/>
+		<logger level="INFO" doc:name="Logger" doc:id="041fc8c3-3777-4abe-aeb7-a41ffdcaabbe" message="flow started"/>
+		<db:select doc:name="Select" doc:id="c496c90f-f8c5-4152-b02a-8bc3533dce3f" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT emp_id, emp_name, emp_status from emp WHERE emp_id=:empID]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	empID:attributes.queryParams.employeeID
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="64703b50-6050-4aab-b195-d4d152b9de1e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	EmployeeID: payload[0].emp_id,
+	EmployeeName: payload[0].emp_name,
+	EmployeeStatus: payload[0].emp_status
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
