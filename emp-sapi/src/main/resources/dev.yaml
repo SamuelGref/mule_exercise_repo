@@ -1,3 +1,4 @@
+ 
 http:
  port: "8091"
  path: "emp_spai"
@@ -7,4 +8,5 @@ db:
   port: "3306"
   user: "umli0bis5cptwc9q"
   password: "lt9rSu1UJldLzcrsCsqH"
-  database: "bnryg7xmhducrdak9ob7"
+  database: "![JSORc587q7WaWyYTVA3vMRgzv+QQgZMZniWuOApBhvk=]"
+  env: "dev"
