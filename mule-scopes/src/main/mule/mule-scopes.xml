@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c9528758-7ddc-4ac4-b616-0e5b0bba8b13" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="3534b377-d331-4b0d-97ca-e741428c4576" >
+		<db:my-sql-connection host="bnryg7xmhducrdak9ob7-mysql.services.clever-cloud.com" port="3306" user="umli0bis5cptwc9q1" password="lt9rSu1UJldLzcrsCsqH" database="bnryg7xmhducrdak9ob7" />
+	</db:config>
+	
+	<flow name="presiset-payload-using-variable" doc:id="7fa2014a-c6bc-4850-8079-2e3e48e94113" >
+		<http:listener doc:name="Listener" doc:id="b42e9df3-f3f7-44ff-99e5-a1347f2e016b" config-ref="HTTP_Listener_config" path="create-employee"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c369f9d7-a840-47ba-835d-ca3a31891cb2" message="Start log"/>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="dbc4d35e-ccbb-4146-b89f-74add64d9e00" variableName="employee_payload"/>
+		<db:insert doc:name="Insert" doc:id="738f7a4f-c6fa-4376-886a-df39d12a1f01" config-ref="Database_Config">
+			<db:sql ><![CDATA[INSERT emp(emp_id, emp_name, emp_status) VALUES(:empId, :empName, :empStatus)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+    empId:payload.employeeID  ,
+	empName:payload.employeeName,
+	empStatus:payload.employeeStatus	
+}]]]></db:input-parameters>
+		</db:insert>
+		<logger level="INFO" doc:name="Logger" doc:id="ff78564e-a6a4-4678-8294-90397fef6bcb" message="#[vars.employee_payload]"/>
+	</flow>
+		<flow name="presiset-payload-using-target-payload" doc:id="d8401f46-d676-49ec-b8cd-4dbf5dcb224e" >
+		<http:listener doc:name="Listener" doc:id="95dafe06-4dda-43b8-b80b-89a9c211222c" config-ref="HTTP_Listener_config" path="create-employee2"/>
+		<logger level="INFO" doc:name="Logger" doc:id="26a5ff6a-1c0a-4416-b8cf-d20f284aa60d" message="Start log"/>
+		<db:insert doc:name="Insert" doc:id="1aaed854-aa01-4511-8756-5a8f77d9cf8c" config-ref="Database_Config" target="payload">
+			<db:sql ><![CDATA[INSERT emp(emp_id, emp_name, emp_status) VALUES(:empId, :empName, :empStatus)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+    empId:payload.employeeID  ,
+	empName:payload.employeeName,
+	empStatus:payload.employeeStatus	
+}]]]></db:input-parameters>
+		</db:insert>
+		<logger level="INFO" doc:name="Logger" doc:id="38cae9de-5b58-49fd-abe8-6b48766bc84c" message="#[payload]"/>
+	</flow>
+	<flow name="async-scope" doc:id="f7d1835b-1536-4b79-bc78-a35b6355b6f7" >
+		<http:listener doc:name="Listener" doc:id="560fa708-433c-46c1-bdda-3aaff6c40c78" config-ref="HTTP_Listener_config" path="async-scope"/>
+		<async doc:name="Async" doc:id="8b6caee2-d076-4359-b647-43708f55ec0d" >
+			<logger level="INFO" doc:name="Logger" doc:id="a67b8ffa-0807-4af4-a00b-6bf08f2d98fb" message="Start log" />
+			<set-variable value="I am Async var" doc:name="Set Variable" doc:id="82d6ea35-2401-40f7-89fe-3b21cad6f792" variableName="async" />
+		</async>
+		<set-variable value="I am sync var" doc:name="Set Variable" doc:id="a770e21c-1faa-4a0f-bdfa-e3bedfc1544c" variableName="sync"/>
+		<db:insert doc:name="Insert" doc:id="755f1974-0e29-46a8-9e4e-e64632a6c6ab" config-ref="Database_Config" target="payload">
+			<db:sql ><![CDATA[INSERT emp(emp_id, emp_name, emp_status) VALUES(:empId, :empName, :empStatus)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+    empId:payload.employeeID  ,
+	empName:payload.employeeName,
+	empStatus:payload.employeeStatus	
+}]]]></db:input-parameters>
+		</db:insert>
+		<logger level="INFO" doc:name="Logger" doc:id="7f4cf3df-0c28-4665-af12-513f7d3f59b7" message="#[vars.sync]"/>
+	</flow>
+	<flow name="Try-scope" doc:id="9bee807b-fa34-47cb-8b31-67342085688b" >
+		<http:listener doc:name="Listener" doc:id="2dfe5b25-bdc8-4b09-b5da-1b3d46d58c08" config-ref="HTTP_Listener_config" path="try-scope"/>
+		<async doc:name="Async" doc:id="67f82721-62ba-421e-ada9-4289a7f777f5" >
+			<logger level="INFO" doc:name="Logger" doc:id="67fd62da-f612-445a-a848-7134969875ee" message="Start log" />
+			<set-variable value="I am Async var" doc:name="Set Variable" doc:id="71ea1c0a-eddd-4ce7-8f70-afecebc4d8af" variableName="async" />
+		</async>
+		<set-variable value="I am sync var" doc:name="Set Variable" doc:id="1b0acfcf-ea0d-4f33-8202-d927cbd27fdd" variableName="sync"/>
+		<try doc:name="Try" doc:id="4161c9c3-c40f-4322-83fc-de60751fb8bc" >
+			<db:insert doc:name="Insert" doc:id="416956c6-2e48-4c88-ae5f-906f4e586fdb" config-ref="Database_Config" target="payload">
+			<db:sql><![CDATA[INSERT emp(emp_id, emp_name, emp_status) VALUES(:empId, :empName, :empStatus)]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+    empId:payload.employeeID  ,
+	empName:payload.employeeName,
+	empStatus:payload.employeeStatus	
+}]]]></db:input-parameters>
+		</db:insert>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7da39131-7f7a-4498-a8e1-cc4080e8540d" >
+					<set-payload value="error but continue " doc:name="Set Payload" doc:id="d1e8d4cd-24b0-4e9e-8a5c-b41f8d2f7994" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<logger level="INFO" doc:name="Logger" doc:id="2f3dbcb6-9d75-498f-9781-aeadc84999ea" message='#[vars.sync ++ payload]'/>
+	</flow>
+</mule>
